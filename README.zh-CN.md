@@ -4,6 +4,8 @@
 
 基于 Gymnasium 的 RS10 棋盘环境与启发式策略（PyTorch）。
 
+**PyPI:** [rs10env](https://pypi.org/project/rs10env/)
+
 ## 安装
 
 默认使用 **仅 CPU 的 PyTorch**（体积更小；若不训练可不装 GPU/CUDA）：

@@ -4,6 +4,8 @@
 
 Gymnasium-compatible RS10 board game environment and heuristic strategies (PyTorch).
 
+**PyPI:** [rs10env](https://pypi.org/project/rs10env/)
+
 ## Install
 
 By default the project uses **CPU-only PyTorch** (smaller install; no GPU/CUDA needed if you are not training):

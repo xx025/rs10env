@@ -31,8 +31,8 @@ app = ["streamlit>=1.28.0"]
 rs10env-app = "rs10env.app:main"
 
 [project.urls]
-Repository = "https://github.com/rs10env/rs10env"
-Documentation = "https://github.com/rs10env/rs10env#readme"
+Repository = "https://github.com/xx025/rs10env"
+Documentation = "https://github.com/xx025/rs10env#readme"
 
 [build-system]
 requires = ["hatchling"]

@@ -183,7 +183,7 @@ uv run streamlit run app.py
 2. 项目页左侧点击 **Publishing**，在 “Publishing” 配置页添加 **Trusted publisher**。
 3. 选择 **GitHub Actions**，填写：
    - **Owner**：你的 GitHub 用户名或组织名
-   - **Repository name**：`rs10env`
+   - **Repository name**：`rs10env`（本仓库为 `xx025/rs10env`）
    - **Workflow name**：`publish.yml`
    - **Environment name**（可选）：留空即可；若填写（如 `pypi`），需在仓库 **Settings → Environments** 中创建同名 environment，并可配置审批等。
 4. 保存后，该 workflow 即可向该 PyPI 项目发布。

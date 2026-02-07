@@ -50,7 +50,7 @@ uv run streamlit run app.py
 
 ## Benchmark (strategy comparison)
 
-Batch runs on a fixed set of boards (16×10, target_sum=10). Below: ~100k games per strategy (50k for `max_future_moves`).
+Batch runs on a fixed set of boards (16×10, target_sum=10). Below: 100k games per strategy.
 
 **Summary (avg steps, avg cells removed, time per game):**
 
@@ -62,19 +62,19 @@ Batch runs on a fixed set of boards (16×10, target_sum=10). Below: ~100k games 
 | large_rect | 100,000 | 36.33 | 91.57 | 0.31 |
 | small_rect | 100,000 | 45.77 | 103.44 | 0.39 |
 | center_small_rect | 100,000 | 46.31 | 104.65 | 0.52 |
-| max_future_moves | 50,000 | 50.09 | 113.58 | 8.14 |
+| max_future_moves | 100,000 | 50.07 | 113.54 | 8.12 |
 
 **Best-strategy share** (per game, the strategy that cleared the most cells):
 
 | Strategy | Best count | Share (%) |
 |----------|------------|-----------|
-| max_future_moves | 40,525 | 40.53 |
-| center_small_rect | 26,171 | 26.17 |
-| small_rect | 20,507 | 20.51 |
-| center_bias | 13,766 | 13.77 |
-| random | 4,341 | 4.34 |
-| greedy | 1,121 | 1.12 |
-| large_rect | 1,023 | 1.02 |
+| max_future_moves | 80,793 | 80.79 |
+| center_small_rect | 10,643 | 10.64 |
+| small_rect | 7,316 | 7.32 |
+| center_bias | 5,185 | 5.19 |
+| random | 1,109 | 1.11 |
+| greedy | 244 | 0.24 |
+| large_rect | 212 | 0.21 |
 
 `max_future_moves` clears the most on average and wins most often, at higher per-game cost; `center_small_rect` and `small_rect` offer a good trade-off.
 
@@ -96,13 +96,6 @@ Cumulative average cells removed over games:
 - PyTorch >= 2.0  
 - Gymnasium >= 1.0  
 - NumPy >= 1.24  
-
-## Publishing to PyPI
-
-The repo uses **PyPI Trusted Publishing (OIDC)**; no API token is stored. To trigger a publish:
-
-1. **From a release**: On GitHub, go to **Releases → Create a new release**, choose a tag (e.g. `v0.1.0`), publish. The workflow runs on `release: published`.
-2. **Manual run**: Go to **Actions → Publish to PyPI**, click **Run workflow**, then **Run workflow**. Builds and uploads to PyPI using OIDC.
 
 ## Related projects
 

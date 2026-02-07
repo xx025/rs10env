@@ -50,7 +50,7 @@ uv run streamlit run app.py
 
 ## 基准（策略对比）
 
-在固定棋盘集上批量对局（16×10，target_sum=10）。约 10 万局/策略（`max_future_moves` 为 5 万局）。
+在固定棋盘集上批量对局（16×10，target_sum=10）。每策略 10 万局。
 
 **汇总（平均步数、平均清除格数、单局耗时）：**
 
@@ -62,19 +62,19 @@ uv run streamlit run app.py
 | large_rect | 100,000 | 36.33 | 91.57 | 0.31 |
 | small_rect | 100,000 | 45.77 | 103.44 | 0.39 |
 | center_small_rect | 100,000 | 46.31 | 104.65 | 0.52 |
-| max_future_moves | 50,000 | 50.09 | 113.58 | 8.14 |
+| max_future_moves | 100,000 | 50.07 | 113.54 | 8.12 |
 
 **最佳策略占比**（该局清除格数最多的策略）：
 
 | 策略 | 最佳次数 | 占比 (%) |
 |------|----------|----------|
-| max_future_moves | 40,525 | 40.53 |
-| center_small_rect | 26,171 | 26.17 |
-| small_rect | 20,507 | 20.51 |
-| center_bias | 13,766 | 13.77 |
-| random | 4,341 | 4.34 |
-| greedy | 1,121 | 1.12 |
-| large_rect | 1,023 | 1.02 |
+| max_future_moves | 80,793 | 80.79 |
+| center_small_rect | 10,643 | 10.64 |
+| small_rect | 7,316 | 7.32 |
+| center_bias | 5,185 | 5.19 |
+| random | 1,109 | 1.11 |
+| greedy | 244 | 0.24 |
+| large_rect | 212 | 0.21 |
 
 `max_future_moves` 平均清除最多、胜出局数最多，但单局耗时较高；`center_small_rect`、`small_rect` 在效果与耗时之间较均衡。
 
@@ -96,13 +96,6 @@ uv run streamlit run app.py
 - PyTorch >= 2.0  
 - Gymnasium >= 1.0  
 - NumPy >= 1.24  
-
-## 发布到 PyPI
-
-本仓库使用 **PyPI Trusted Publishing (OIDC)**，无需保存 API Token。触发发布方式：
-
-1. **通过 Release**：在 GitHub 进入 **Releases → Create a new release**，选择或新建标签（如 `v0.1.0`），发布。工作流在 `release: published` 时自动运行。
-2. **手动运行**：进入 **Actions → Publish to PyPI**，点击 **Run workflow** → **Run workflow**。会先构建再通过 OIDC 上传到 PyPI。
 
 ## 相关项目
 

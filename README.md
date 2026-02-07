@@ -12,7 +12,9 @@ By default the project uses **CPU-only PyTorch** (smaller install; no GPU/CUDA n
 # With uv (recommended; installs torch from PyTorch CPU index)
 uv add rs10env
 
-# Or from source
+# Or from source: clone repo, then sync in project root
+git clone https://github.com/xx025/rs10env.git
+cd rs10env
 uv sync
 ```
 
@@ -89,6 +91,7 @@ This repo focuses on **simulation environment and strategies** (Gymnasium + heur
 
 | Project | Platform | Description |
 |---------|----------|-------------|
+| [nusery (longlifedahan)](https://github.com/longlifedahan/longlifedahan.github.io/blob/master/nusery.html) | Web | HTML/JS frontend, [playable demo](https://longlifedahan.github.io/nusery.html) |
 | [Opening_Nursery_For_Mac](https://github.com/guzhoudong521/Opening_Nursery_For_Mac) | macOS | Python, pyautogui + OpenCV + Tesseract |
 | [nursery-bot](https://github.com/rikkayoru/nursery-bot) | Windows | Python bot, Tesseract OCR |
 | [KaiJuTuoErSuo](https://github.com/hncboy/KaiJuTuoErSuo) | Android | Java + ADB, OpenCV, OCR, DFS for elimination path |

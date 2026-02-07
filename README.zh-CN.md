@@ -12,7 +12,9 @@
 # 使用 uv（推荐；从 PyTorch CPU 源安装 torch）
 uv add rs10env
 
-# 或从源码安装
+# 或从源码安装：克隆仓库后在项目根目录执行 sync
+git clone https://github.com/xx025/rs10env.git
+cd rs10env
 uv sync
 ```
 
@@ -89,6 +91,7 @@ uv run streamlit run app.py
 
 | 项目 | 平台 | 说明 |
 |------|------|------|
+| [nusery (longlifedahan)](https://github.com/longlifedahan/longlifedahan.github.io/blob/master/nusery.html) | Web | HTML/JS 前端，[在线试玩](https://longlifedahan.github.io/nusery.html) |
 | [Opening_Nursery_For_Mac](https://github.com/guzhoudong521/Opening_Nursery_For_Mac) | macOS | Python + pyautogui + OpenCV + Tesseract |
 | [nursery-bot](https://github.com/rikkayoru/nursery-bot) | Windows | Python bot，Tesseract OCR |
 | [KaiJuTuoErSuo](https://github.com/hncboy/KaiJuTuoErSuo) | 安卓 | Java + ADB，OpenCV、OCR，DFS 消除路径 |

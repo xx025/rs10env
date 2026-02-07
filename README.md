@@ -50,31 +50,17 @@ uv run streamlit run app.py
 
 ## Benchmark (strategy comparison)
 
-Batch runs on a fixed set of boards (16×10, target_sum=10). Below: 100k games per strategy.
+Batch runs on a fixed set of boards (16×10, target_sum=10). Below: 100k games per strategy. “Best count” / “Share” = times that strategy cleared the most cells in a game.
 
-**Summary (avg steps, avg cells removed, time per game):**
-
-| Strategy | Tests | Avg steps | Avg removed | Time/game (s) |
-|----------|-------|-----------|--------------|---------------|
-| random | 100,000 | 40.72 | 96.82 | 0.32 |
-| greedy | 100,000 | 36.38 | 92.11 | 0.31 |
-| center_bias | 100,000 | 43.15 | 101.15 | 0.31 |
-| large_rect | 100,000 | 36.33 | 91.57 | 0.31 |
-| small_rect | 100,000 | 45.77 | 103.44 | 0.39 |
-| center_small_rect | 100,000 | 46.31 | 104.65 | 0.52 |
-| max_future_moves | 100,000 | 50.07 | 113.54 | 8.12 |
-
-**Best-strategy share** (per game, the strategy that cleared the most cells):
-
-| Strategy | Best count | Share (%) |
-|----------|------------|-----------|
-| max_future_moves | 80,793 | 80.79 |
-| center_small_rect | 10,643 | 10.64 |
-| small_rect | 7,316 | 7.32 |
-| center_bias | 5,185 | 5.19 |
-| random | 1,109 | 1.11 |
-| greedy | 244 | 0.24 |
-| large_rect | 212 | 0.21 |
+| Strategy | Tests | Avg steps | Avg removed | Time/game (s) | Best count | Share (%) |
+|----------|-------|-----------|--------------|---------------|-----------|-----------|
+| random | 100,000 | 40.72 | 96.82 | 0.32 | 1,109 | 1.11 |
+| greedy | 100,000 | 36.38 | 92.11 | 0.31 | 244 | 0.24 |
+| center_bias | 100,000 | 43.15 | 101.15 | 0.31 | 5,185 | 5.19 |
+| large_rect | 100,000 | 36.33 | 91.57 | 0.31 | 212 | 0.21 |
+| small_rect | 100,000 | 45.77 | 103.44 | 0.39 | 7,316 | 7.32 |
+| center_small_rect | 100,000 | 46.31 | 104.65 | 0.52 | 10,643 | 10.64 |
+| max_future_moves | 100,000 | 50.07 | 113.54 | 8.12 | 80,793 | 80.79 |
 
 `max_future_moves` clears the most on average and wins most often, at higher per-game cost; `center_small_rect` and `small_rect` offer a good trade-off.
 

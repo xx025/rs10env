@@ -138,6 +138,48 @@ uv run streamlit run app.py
 - `epsilon_greedy` — ε-贪心  
 - `max_future_moves` — 选使下一步合法动作数最多的动作  
 
+## 基准（策略对比）
+
+在固定棋盘集上批量对局（16×10，target_sum=10）。约 10 万局/策略（`max_future_moves` 为 5 万局）。
+
+**汇总（平均步数、平均清除格数、单局耗时）：**
+
+| 策略 | 测试局数 | 平均步数 | 平均清除格数 | 单局耗时 (s) |
+|------|----------|----------|--------------|--------------|
+| random | 100,000 | 40.72 | 96.82 | 0.32 |
+| greedy | 100,000 | 36.38 | 92.11 | 0.31 |
+| center_bias | 100,000 | 43.15 | 101.15 | 0.31 |
+| large_rect | 100,000 | 36.33 | 91.57 | 0.31 |
+| small_rect | 100,000 | 45.77 | 103.44 | 0.39 |
+| center_small_rect | 100,000 | 46.31 | 104.65 | 0.52 |
+| max_future_moves | 50,000 | 50.09 | 113.58 | 8.14 |
+
+**最佳策略占比**（该局清除格数最多的策略）：
+
+| 策略 | 最佳次数 | 占比 (%) |
+|------|----------|----------|
+| max_future_moves | 40,525 | 40.53 |
+| center_small_rect | 26,171 | 26.17 |
+| small_rect | 20,507 | 20.51 |
+| center_bias | 13,766 | 13.77 |
+| random | 4,341 | 4.34 |
+| greedy | 1,121 | 1.12 |
+| large_rect | 1,023 | 1.02 |
+
+`max_future_moves` 平均清除最多、胜出局数最多，但单局耗时较高；`center_small_rect`、`small_rect` 在效果与耗时之间较均衡。
+
+各策略清除格数分布（箱线图）：
+
+![removed_boxplot](docs/benchmark/removed_boxplot.png)
+
+最佳策略占比（每局清除最多者）：
+
+![best_strategy_analysis](docs/benchmark/best_strategy_analysis.png)
+
+累计平均清除格数随对局数变化：
+
+![cumulative_avg_removed](docs/benchmark/cumulative_avg_removed.png)
+
 ## 依赖
 
 - Python >= 3.10  

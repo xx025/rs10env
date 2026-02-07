@@ -1,0 +1,45 @@
+# 使用 PyPI Trusted Publishing (OIDC) 发布，无需配置 API Token
+# 首次使用前需在 PyPI 项目设置中添加 Trusted Publisher，见 README
+name: Publish to PyPI
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v4
+        with:
+          version: "latest"
+
+      - name: Set up Python
+        run: uv python install 3.12
+
+      - name: Build package
+        run: uv build
+
+      - name: Upload dist
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist/
+
+  pypi-publish:
+    runs-on: ubuntu-latest
+    needs: build
+    permissions:
+      id-token: write  # 必须：OIDC 换取 PyPI 短期 token
+    steps:
+      - name: Download dist
+        uses: actions/download-artifact@v4
+        with:
+          name: dist
+
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1

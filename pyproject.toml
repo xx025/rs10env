@@ -1,0 +1,60 @@
+[project]
+name = "rs10env"
+version = "0.1.0"
+description = "RS10 board game environment (Gymnasium + PyTorch) and heuristic strategies"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "RS10Env" }]
+keywords = ["gymnasium", "reinforcement-learning", "pytorch", "rs10", "game-env"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+dependencies = [
+    "gymnasium>=1.0.0",
+    "numpy>=1.24.0",
+    "torch>=2.0.0",
+]
+
+[project.optional-dependencies]
+app = ["streamlit>=1.28.0"]
+
+[project.scripts]
+rs10env-app = "rs10env.app:main"
+
+[project.urls]
+Repository = "https://github.com/rs10env/rs10env"
+Documentation = "https://github.com/rs10env/rs10env#readme"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["rs10env"]
+
+# 默认从 PyTorch CPU 源安装 torch，体积更小（不训练/不用 GPU 时无需 CUDA）
+[tool.uv.sources]
+torch = { index = "pytorch-cpu" }
+
+[[tool.uv.index]]
+name = "pytorch-cpu"
+url = "https://download.pytorch.org/whl/cpu"
+explicit = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-v"
+
+[dependency-groups]
+dev = [
+    "pytest>=7.0.0",
+]

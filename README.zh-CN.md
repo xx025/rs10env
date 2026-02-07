@@ -4,7 +4,7 @@
 
 基于 Gymnasium 的 RS10 棋盘环境与启发式策略（PyTorch）。
 
-**PyPI:** [rs10env](https://pypi.org/project/rs10env/)
+**PyPI:** [rs10env](https://pypi.org/project/rs10env/) · **GitHub:** [xx025/rs10env](https://github.com/xx025/rs10env)
 
 ## 安装
 

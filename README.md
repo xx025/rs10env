@@ -4,7 +4,7 @@
 
 Gymnasium-compatible RS10 board game environment and heuristic strategies (PyTorch).
 
-**PyPI:** [rs10env](https://pypi.org/project/rs10env/)
+**PyPI:** [rs10env](https://pypi.org/project/rs10env/) · **GitHub:** [xx025/rs10env](https://github.com/xx025/rs10env)
 
 ## Install
 

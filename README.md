@@ -4,6 +4,19 @@
 
 Gymnasium-compatible RS10 board game environment and heuristic strategies (PyTorch).
 
+## Latest Strategy
+
+**Latest strategy: `multi_start`. Implemented by: gpt6 astra.**
+
+New strategy: `create_strategy("multi_start", num_rollouts=128, device="cpu")`
+searches complete randomized rollouts with batched CPU NumPy operations and
+executes the plan clearing the most cells. It is also available in the app.
+Run `python -m rs10env.benchmark --games 30 --seed 1000` for paired evaluation.
+On these 30 boards it cleared 117.33 cells on average versus 115.77 for
+`max_future_moves` (18 wins, 3 ties, 9 losses; approximate paired 95% CI for
+the difference: [0.36, 2.77] cells). This is preliminary, not a universal
+improvement. See [Chinese README](README.zh-CN.md) for timings and details.
+
 **PyPI:** [rs10env](https://pypi.org/project/rs10env/) · **GitHub:** [xx025/rs10env](https://github.com/xx025/rs10env)
 
 ## Install

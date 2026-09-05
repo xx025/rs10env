@@ -1,5 +1,6 @@
 """run_episode / run_strategies / run_strategies_on_board 测试。"""
 import pytest
+import numpy as np
 
 from rs10env import run_episode, run_strategies, run_strategies_on_board, STRATEGY_NAMES, create_strategy, RS10Env
 
@@ -10,6 +11,56 @@ def test_run_episode_returns_dict(env):
     assert set(result.keys()) == {"total_reward", "steps", "total_cleared"}
     assert result["steps"] >= 0
     assert result["total_cleared"] >= 0
+
+
+def test_run_episode_with_board():
+    env = RS10Env(device="cpu", H=1, W=2)
+    strategy = create_strategy("greedy", device="cpu")
+    board = np.array([[5, 5]], dtype=np.int32)
+
+    result = run_episode(env, strategy, board=board)
+
+    assert result == {"total_reward": 2.0, "steps": 1, "total_cleared": 2}
+    np.testing.assert_array_equal(board, [[5, 5]])
+
+
+@pytest.mark.parametrize("as_list", [False, True])
+@pytest.mark.parametrize("values, reward, steps, cleared", [
+    ([[5, 5]], 2.0, 1, 2),
+    ([[9, 9]], 0.0, 0, 0),
+])
+def test_run_strategies_on_board_preserves_starting_board(
+    monkeypatch, as_list, values, reward, steps, cleared
+):
+    board = values if as_list else np.array(values, dtype=np.int32)
+    starting_boards = []
+    reset = RS10Env.reset
+
+    def record_reset(self, *args, **kwargs):
+        result = reset(self, *args, **kwargs)
+        starting_boards.append(self.board_2d.cpu().numpy().copy())
+        return result
+
+    monkeypatch.setattr(RS10Env, "reset", record_reset)
+    results = run_strategies_on_board(
+        board, ["random", "greedy"], device="cpu", H=1, W=2
+    )
+
+    # One constructor reset, followed by exactly one reset per strategy.
+    assert len(starting_boards) == 3
+    for starting_board in starting_boards[1:]:
+        np.testing.assert_array_equal(starting_board, values)
+    np.testing.assert_array_equal(board, values)
+    assert results == [
+        {
+            "strategy_name": name,
+            "total_reward": reward,
+            "steps": steps,
+            "total_cleared": cleared,
+            "is_best": True,
+        }
+        for name in ["random", "greedy"]
+    ]
 
 
 def test_run_strategies_on_board():

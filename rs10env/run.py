@@ -16,6 +16,7 @@ STRATEGY_NAMES = [
     "center_small_rect",
     "epsilon_greedy",
     "max_future_moves",
+    "multi_start",
 ]
 
 
@@ -23,12 +24,17 @@ def run_episode(
     env: RS10Env,
     strategy: Strategy,
     seed: Optional[int] = None,
+    board: Optional[Union[np.ndarray, list]] = None,
 ) -> dict:
     """
     用指定策略跑一局，直到结束。
     返回: total_reward, steps, total_cleared (总消除格数)
     """
-    obs, info = env.reset(seed=seed)
+    if board is None:
+        obs, info = env.reset(seed=seed)
+    else:
+        # CPU resets can share NumPy memory; keep each episode independent.
+        obs, info = env.reset(seed=seed, board=np.array(board, dtype=np.int32, copy=True))
     total_reward = 0.0
     total_cleared = 0
 
@@ -136,8 +142,7 @@ def run_strategies_on_board(
 
     results = []
     for name in strategy_names:
-        env.reset(board=board)
-        ep = run_episode(env, strategies[name], seed=None)
+        ep = run_episode(env, strategies[name], board=board)
         results.append({
             "strategy_name": name,
             "total_reward": round(float(ep["total_reward"]), 4),

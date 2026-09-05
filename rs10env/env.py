@@ -126,7 +126,9 @@ class RS10Env(Env):
             - prefix[r2 + 1, c1]
             + prefix[r1, c1]
         )
-        return rect_sums == self.target_sum
+        diag1_ok = (self.board_2d[r1, c1] != 0) & (self.board_2d[r2, c2] != 0)
+        diag2_ok = (self.board_2d[r1, c2] != 0) & (self.board_2d[r2, c1] != 0)
+        return (rect_sums == self.target_sum) & (diag1_ok | diag2_ok)
 
     @torch.no_grad()
     def step(self, action, **kwargs):

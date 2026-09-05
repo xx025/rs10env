@@ -51,6 +51,40 @@ uv run streamlit run app.py
 - `center_small_rect` — 中心 + 小面积  
 - `epsilon_greedy` — ε-贪心  
 - `max_future_moves` — 选使下一步合法动作数最多的动作  
+- `multi_start`: 默认模拟 128 条带随机性的小矩形/中心偏好路线，执行终局清除格数最多的方案。支持 `num_rollouts` 调整搜索预算；使用 NumPy 在 CPU 上批量搜索，返回环境设备上的动作。执行中若棋盘或规则变化，会重新规划。
+
+### 最新策略
+
+**最新策略：`multi_start`。实现者：gpt6 astra。**
+
+### 新策略配对评测
+
+```python
+from rs10env import create_strategy, RS10Env, run_episode
+
+env = RS10Env(device="cpu")
+strategy = create_strategy("multi_start", num_rollouts=128, seed=68, device="cpu")
+result = run_episode(env, strategy, seed=1000)
+print(result)
+```
+
+可复现评测（输出逐局 JSON、均值、胜平负和配对差值的近似 95% 置信区间）：
+
+```bash
+python -m rs10env.benchmark --games 30 --seed 1000 --rollouts 128
+```
+
+本机 CPU 单线程、16×10、目标和 10，棋盘种子 1000–1029，每局策略种子重置为 68：
+
+| 策略 | 平均清除格数 | 秒/局 |
+|------|-------------:|------:|
+| center_small_rect | 107.50 | 0.646 |
+| max_future_moves（加速后） | 115.77 | 1.804 |
+| multi_start | 117.33 | 1.946 |
+
+相对 `max_future_moves`：平均多清 1.57 格（约 1.35%），18 胜 / 3 平 / 9 负，配对差值近似 95% 置信区间 [0.36, 2.77] 格。仅为 30 局初步结果，不保证所有棋盘更优，也不能直接与下方历史 10 万局数据比较。更大 `num_rollouts` 会增加时间和内存开销；尚未评估 GPU 性能。
+
+本次同时修复指定棋盘对比被随机重置的问题，并补齐前缀和合法性检查的对角线条件。`max_future_moves` 改为直接模拟棋盘并用前缀和计算后继动作数，保留原有评分和随机决胜规则。
 
 ## 基准（策略对比）
 

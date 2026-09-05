@@ -64,3 +64,13 @@ def test_valid_actions_mask_shape(env):
     mask = env.get_valid_actions_mask()
     assert mask.shape == (len(env.all_rects),)
     assert mask.dtype == torch.bool
+
+
+@pytest.mark.parametrize("target", [8, 10])
+def test_prefix_mask_matches_reference(target):
+    env = RS10Env(H=5, W=6, target_sum=target, device="cpu")
+    for seed in range(10):
+        env.reset(seed=seed)
+        env.board_2d[torch.rand(env.H, env.W) < 0.5] = 0
+        assert torch.equal(env.get_valid_actions_mask(),
+                           env.get_valid_actions_mask_prefix())

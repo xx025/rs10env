@@ -1,5 +1,6 @@
-"""RS10 启发式策略（纯 PyTorch）。"""
+"""RS10 heuristic strategies and NumPy rollout search."""
 import torch
+import numpy as np
 from typing import Tuple, List, Optional
 
 from rs10env.env import RS10Env
@@ -196,7 +197,8 @@ class MaxFutureMovesStrategy(Strategy):
         self._sim_env_device = device
 
     def _ensure_sim_env_device(self, env: RS10Env) -> None:
-        if self._sim_env.device != env.device:
+        if (self._sim_env.device != env.device or self._sim_env.H != env.H
+                or self._sim_env.W != env.W or self._sim_env.target_sum != env.target_sum):
             self._sim_env = RS10Env(device=env.device, H=env.H, W=env.W, target_sum=env.target_sum)
             self._sim_env_device = env.device
 
@@ -212,9 +214,8 @@ class MaxFutureMovesStrategy(Strategy):
         for i in range(num_valid):
             action = valid_indices[i].item()
             self._sim_env.board_2d.copy_(env.board_2d)
-            self._sim_env._board_3d.copy_(env._board_3d)
-            self._sim_env.step(action)
-            new_valid_mask = self._sim_env.get_valid_actions_mask()
+            self._sim_env.board_2d[env.rect_masks[action]] = 0
+            new_valid_mask = self._sim_env.get_valid_actions_mask_prefix()
             future_moves_counts[i] = new_valid_mask.sum().to(torch.int32)
         best_idx = future_moves_counts.argmax()
         best_action = valid_indices[best_idx]
@@ -225,6 +226,77 @@ class MaxFutureMovesStrategy(Strategy):
             idx = torch.randint(0, best_candidates.numel(), (1,), device=best_candidates.device, generator=self._generator)
             return best_candidates[idx].squeeze()
         return best_action
+
+
+class MultiStartStrategy(Strategy):
+    """Search complete randomized rollouts and execute the best legal plan.
+
+    Planning uses batched NumPy prefix sums on CPU, including for CUDA envs.
+    The remaining plan is reused only while the observed state matches it.
+    """
+
+    def __init__(self, num_rollouts: int = 128, seed: Optional[int] = None,
+                 device: Optional[str] = None):
+        super().__init__("MultiStart", seed, device)
+        if not isinstance(num_rollouts, int) or num_rollouts < 1:
+            raise ValueError("num_rollouts must be a positive integer")
+        self.num_rollouts = num_rollouts
+        self._rng = np.random.default_rng(self._seed)
+        self._plan = []
+        self._expected = None
+        self._context = None
+
+    @torch.no_grad()
+    def get_action(self, env: RS10Env, valid_actions_mask: torch.Tensor) -> torch.Tensor:
+        if not valid_actions_mask.any():
+            return self._get_fallback_action(valid_actions_mask, env)
+        board = env.board_2d.cpu().numpy()
+        remaining = env.max_steps - env.step_count
+        context = (env.H, env.W, env.target_sum, remaining)
+        if (not self._plan or self._context != context
+                or not np.array_equal(board, self._expected)
+                or not valid_actions_mask[self._plan[0]]):
+            r1, c1, r2, c2 = env.all_rects.cpu().numpy().T
+            area = (r2 - r1 + 1) * (c2 - c1 + 1)
+            distance = np.hypot((r1 + r2) / 2 - env.H / 2,
+                                (c1 + c2) / 2 - env.W / 2)
+            distance /= max(env.H, env.W)
+            n = self.num_rollouts
+            boards = np.broadcast_to(board, (n, env.H, env.W)).copy()
+            paths = [[] for _ in range(n)]
+            # Diverse small-rectangle/central policies avoid identical rollouts.
+            size_weight = self._rng.uniform(0.5, 3.0, (n, 1))
+            center_weight = self._rng.uniform(0.0, 4.0, (n, 1))
+            prior = -size_weight * np.log(area) - center_weight * distance
+            rows = np.arange(n)
+            for depth in range(max(1, remaining)):
+                prefix = np.pad(boards, ((0, 0), (1, 0), (1, 0)))
+                prefix = prefix.cumsum(axis=1).cumsum(axis=2)
+                sums = (prefix[:, r2 + 1, c2 + 1] - prefix[:, r1, c2 + 1]
+                        - prefix[:, r2 + 1, c1] + prefix[:, r1, c1])
+                diagonal = (((boards[:, r1, c1] != 0) & (boards[:, r2, c2] != 0))
+                            | ((boards[:, r1, c2] != 0) & (boards[:, r2, c1] != 0)))
+                valid = (sums == env.target_sum) & diagonal
+                if depth == 0:
+                    valid &= valid_actions_mask.cpu().numpy()
+                active = valid.any(axis=1)
+                if not active.any():
+                    break
+                scores = prior + self._rng.gumbel(size=valid.shape)
+                scores[~valid] = -np.inf
+                actions = scores.argmax(axis=1)
+                for i in rows[active]:
+                    a = int(actions[i])
+                    paths[i].append(a)
+                    boards[i, r1[a]:r2[a] + 1, c1[a]:c2[a] + 1] = 0
+            best = np.count_nonzero(boards, axis=(1, 2)).argmin()
+            self._plan = paths[best]
+        action = self._plan.pop(0)
+        self._expected = board.copy()
+        r1, c1, r2, c2 = env.all_rects[action].tolist()
+        self._expected[r1:r2 + 1, c1:c2 + 1] = 0
+        self._context = (env.H, env.W, env.target_sum, remaining - 1)
+        return torch.tensor(action, device=valid_actions_mask.device, dtype=torch.int64)
 
 
 def create_strategy(strategy_name: str, **kwargs) -> Strategy:
@@ -238,6 +310,7 @@ def create_strategy(strategy_name: str, **kwargs) -> Strategy:
         "center_small_rect": CenterSmallRectStrategy,
         "epsilon_greedy": EpsilonGreedyStrategy,
         "max_future_moves": MaxFutureMovesStrategy,
+        "multi_start": MultiStartStrategy,
     }
     strategy_class = strategies.get(strategy_name.lower())
     if strategy_class is None:

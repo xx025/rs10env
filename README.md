@@ -6,16 +6,37 @@ Gymnasium-compatible RS10 board game environment and heuristic strategies (PyTor
 
 ## Latest Strategy
 
-**Latest strategy: `multi_start`. Implemented by: gpt6 astra.**
+**Latest strategy: `trajectory_search`. Implemented by: gpt6 astra.**
 
-New strategy: `create_strategy("multi_start", num_rollouts=128, device="cpu")`
-searches complete randomized rollouts with batched CPU NumPy operations and
-executes the plan clearing the most cells. It is also available in the app.
-Run `python -m rs10env.benchmark --games 30 --seed 1000` for paired evaluation.
-On these 30 boards it cleared 117.33 cells on average versus 115.77 for
-`max_future_moves` (18 wins, 3 ties, 9 losses; approximate paired 95% CI for
-the difference: [0.36, 2.77] cells). This is preliminary, not a universal
-improvement. See [Chinese README](README.zh-CN.md) for timings and details.
+Unlike independent `multi_start` rollouts, this strategy repeatedly mutates
+prefixes of its best action sequence and repairs the suffix, favoring old
+moves that remain legal. It retains the incumbent unless a complete replacement
+clears at least as many cells. This is heuristic trajectory optimization,
+not a new fundamental algorithm or a proof of optimality.
+
+```python
+strategy = create_strategy("trajectory_search", num_rollouts=128,
+                           iterations=24, batch_size=64, seed=68, device="cpu")
+```
+
+Held-out seeds 2000–2029, CPU single-threaded, default board rules:
+
+| Strategy | Mean Cleared | Seconds/Game |
+|----------|-------------:|-------------:|
+| max_future_moves | 109.27 | 0.974 |
+| multi_start (128) | 111.33 | 1.343 |
+| multi_start (512) | 113.30 | 6.157 |
+| trajectory_search | **118.10** | 4.542 |
+
+Versus `max_future_moves`: +8.83 cells (+8.08%), 26 wins / 2 ties / 2 losses,
+approximate paired 95% CI [6.94, 10.72] cells, but 4.66x the runtime.
+Versus 512 independent rollouts: +4.80 cells with 26% less mean runtime;
+this is a measured cost comparison, not an enforced equal-time experiment.
+Only 30 held-out boards were tested, with no GPU or optimality evaluation.
+
+Run `python -m rs10env.benchmark --games 30 --seed 2000` to reproduce.
+[Per-board results](docs/benchmark/trajectory_search_2000_2029.json) and
+[Chinese documentation](README.zh-CN.md) include further details.
 
 **PyPI:** [rs10env](https://pypi.org/project/rs10env/) · **GitHub:** [xx025/rs10env](https://github.com/xx025/rs10env)
 

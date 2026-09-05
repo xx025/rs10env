@@ -17,6 +17,7 @@ STRATEGY_NAMES = [
     "epsilon_greedy",
     "max_future_moves",
     "multi_start",
+    "trajectory_search",
 ]
 
 

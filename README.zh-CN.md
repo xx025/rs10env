@@ -52,12 +52,52 @@ uv run streamlit run app.py
 - `epsilon_greedy` — ε-贪心  
 - `max_future_moves` — 选使下一步合法动作数最多的动作  
 - `multi_start`: 默认模拟 128 条带随机性的小矩形/中心偏好路线，执行终局清除格数最多的方案。支持 `num_rollouts` 调整搜索预算；使用 NumPy 在 CPU 上批量搜索，返回环境设备上的动作。执行中若棋盘或规则变化，会重新规划。
+- `trajectory_search`: 在 `multi_start` 初始解上进行行动序列优化，反复改变前缀并修复后续路线，保留终局得分不下降的方案。
 
 ### 最新策略
 
-**最新策略：`multi_start`。实现者：gpt6 astra。**
+**最新策略：`trajectory_search`。实现者：gpt6 astra。**
 
-### 新策略配对评测
+与上一版独立随机试跑不同，新策略积累并优化已有解：在不同深度截断当前最佳路线，优先尝试不同的动作，用不同强度的旧动作偏好修复剩余路线。既探索早期决策，也优化残局；同分方案可替换以探索新的路线。搜索同时排除对角端点已被删除、永远不可能再合法的矩形。
+
+这是行动序列局部搜索与修复方法的工程实现，不声称提出全新基础算法或达到全局最优。在相同初始棋盘、种子与预算下，搜索保留 `multi_start` 初始解，不会降低该初始解的最终清除格数；这不是对任意基线或任意耗时预算的保证。
+
+```python
+from rs10env import RS10Env, create_strategy, run_episode
+
+env = RS10Env(device="cpu")
+strategy = create_strategy("trajectory_search", num_rollouts=128,
+                           iterations=24, batch_size=64, seed=68, device="cpu")
+print(run_episode(env, strategy, seed=2000))
+```
+
+`iterations` 控制优化轮数，`batch_size` 控制每轮替代路线数量。增加预算不保证严格提升，可能停在局部最优；搜索在 CPU 上完成，主要耗时集中于首次规划。
+
+### 行动序列搜索评测
+
+先在种子 42–46 上开发，再固定默认参数，在未参与开发的种子 2000–2029 上评测。CPU 单线程、16×10、目标和 10，每局策略种子重置为 68：
+
+| 策略 | 平均清除格数 | 秒/局 |
+|------|-------------:|------:|
+| max_future_moves | 109.27 | 0.974 |
+| multi_start（128 条） | 111.33 | 1.343 |
+| multi_start（512 条） | 113.30 | 6.157 |
+| trajectory_search | **118.10** | 4.542 |
+
+- 相对原最强 `max_future_moves`：多清 8.83 格（8.08%），26 胜 / 2 平 / 2 负，配对差值近似 95% 置信区间 [6.94, 10.72] 格；耗时为其 4.66 倍。
+- 相对上一版默认 `multi_start`：多清 6.77 格，30 胜 / 0 平 / 0 负。
+- 相对 512 条独立试跑：多清 4.80 格，26 胜 / 1 平 / 3 负，平均耗时还少约 26%。这是实际耗时对照，不是严格限定相同墙钟预算的实验。
+
+仅 30 局独立验证，尚不能称为全面领先，也没有最优解差距或 GPU 性能证明。不同棋盘集的绝对均分不能直接横向比较。
+
+```bash
+python -m rs10env.benchmark --games 30 --seed 2000
+# 可用 --output new_results.json 写入逐局数据；不会覆盖已有文件
+```
+
+本次[逐局原始结果](docs/benchmark/trajectory_search_2000_2029.json)已保存。
+
+### 上一版 multi_start 评测
 
 ```python
 from rs10env import create_strategy, RS10Env, run_episode
@@ -68,7 +108,7 @@ result = run_episode(env, strategy, seed=1000)
 print(result)
 ```
 
-可复现评测（输出逐局 JSON、均值、胜平负和配对差值的近似 95% 置信区间）：
+历史评测使用以下种子和预算；当前入口已增加新策略与 512 条试跑对照，配对统计改为针对 `trajectory_search`：
 
 ```bash
 python -m rs10env.benchmark --games 30 --seed 1000 --rollouts 128

@@ -291,12 +291,111 @@ class MultiStartStrategy(Strategy):
                     boards[i, r1[a]:r2[a] + 1, c1[a]:c2[a] + 1] = 0
             best = np.count_nonzero(boards, axis=(1, 2)).argmin()
             self._plan = paths[best]
+            self._plan = self._improve_plan(env, self._plan, valid_actions_mask)
         action = self._plan.pop(0)
         self._expected = board.copy()
         r1, c1, r2, c2 = env.all_rects[action].tolist()
         self._expected[r1:r2 + 1, c1:c2 + 1] = 0
         self._context = (env.H, env.W, env.target_sum, remaining - 1)
         return torch.tensor(action, device=valid_actions_mask.device, dtype=torch.int64)
+
+
+    def _improve_plan(self, env, plan, valid_actions_mask):
+        return plan
+
+
+class TrajectorySearchStrategy(MultiStartStrategy):
+    """Monotone incumbent search with prefix mutation and suffix repair.
+
+    Repairs favor still-legal incumbent moves, but mix imitation strengths
+    to discover continuations that require abandoning several old moves.
+    """
+
+    def __init__(self, num_rollouts: int = 128, iterations: int = 24,
+                 batch_size: int = 64, seed: Optional[int] = None,
+                 device: Optional[str] = None):
+        super().__init__(num_rollouts, seed, device)
+        for name, value in [("iterations", iterations), ("batch_size", batch_size)]:
+            if not isinstance(value, int) or value < 1:
+                raise ValueError(f"{name} must be a positive integer")
+        self.name = "TrajectorySearch"
+        self.iterations = iterations
+        self.batch_size = batch_size
+
+    def _improve_plan(self, env, plan, valid_actions_mask):
+        initial = env.board_2d.cpu().numpy()
+        rects = env.all_rects.cpu().numpy()
+        root_mask = valid_actions_mask.cpu().numpy()
+        remaining = env.max_steps - env.step_count
+        incumbent = list(plan)
+        best_left = initial.copy()
+        for a in incumbent:
+            r1, c1, r2, c2 = rects[a]
+            best_left[r1:r2 + 1, c1:c2 + 1] = 0
+        best_score = np.count_nonzero(best_left)
+        self.search_scores = [int(best_score)]
+        n = self.batch_size
+        for iteration in range(self.iterations):
+            if not incumbent or best_score == 0:
+                break
+            # Mix global changes and cheaper late-game repairs.
+            fraction = self._rng.random()
+            if iteration % 3:
+                fraction = np.sqrt(fraction)
+            cut = min(int(fraction * len(incumbent)), len(incumbent) - 1)
+            start = initial.copy()
+            for a in incumbent[:cut]:
+                r1, c1, r2, c2 = rects[a]
+                start[r1:r2 + 1, c1:c2 + 1] = 0
+            r1, c1, r2, c2 = rects.T
+            # A deleted corner never returns: these rectangles are permanently dead.
+            alive = (((start[r1, c1] != 0) & (start[r2, c2] != 0))
+                     | ((start[r1, c2] != 0) & (start[r2, c1] != 0)))
+            ids = np.flatnonzero(alive)
+            r1, c1, r2, c2 = rects[ids].T
+            area = (r2 - r1 + 1) * (c2 - c1 + 1)
+            distance = np.hypot((r1 + r2) / 2 - env.H / 2,
+                                (c1 + c2) / 2 - env.W / 2) / max(env.H, env.W)
+            prior = (-self._rng.uniform(0.5, 3, (n, 1)) * np.log(area)
+                     - self._rng.uniform(0, 4, (n, 1)) * distance)
+            imitation = self._rng.uniform(0, 12, (n, 1))
+            prior += imitation * np.isin(ids, incumbent[cut:])
+            boards = np.broadcast_to(start, (n, env.H, env.W)).copy()
+            paths = [[] for _ in range(n)]
+            prefix = np.zeros((n, env.H + 1, env.W + 1), dtype=np.int32)
+            for depth in range(remaining - cut):
+                np.cumsum(boards, axis=1, dtype=np.int32, out=prefix[:, 1:, 1:])
+                np.cumsum(prefix[:, 1:, 1:], axis=2, dtype=np.int32,
+                          out=prefix[:, 1:, 1:])
+                sums = (prefix[:, r2 + 1, c2 + 1] - prefix[:, r1, c2 + 1]
+                        - prefix[:, r2 + 1, c1] + prefix[:, r1, c1])
+                valid = (sums == env.target_sum) & (
+                    ((boards[:, r1, c1] != 0) & (boards[:, r2, c2] != 0))
+                    | ((boards[:, r1, c2] != 0) & (boards[:, r2, c1] != 0)))
+                if depth == 0:
+                    if cut == 0:
+                        valid &= root_mask[ids]
+                    alternatives = valid.copy()
+                    alternatives[:, ids == incumbent[cut]] = False
+                    can_mutate = alternatives.any(axis=1)
+                    valid[can_mutate] = alternatives[can_mutate]
+                active = valid.any(axis=1)
+                if not active.any():
+                    break
+                scores = prior + self._rng.gumbel(size=valid.shape)
+                scores[~valid] = -np.inf
+                actions = scores.argmax(axis=1)
+                for row in np.flatnonzero(active):
+                    a = actions[row]
+                    paths[row].append(int(ids[a]))
+                    boards[row, r1[a]:r2[a] + 1, c1[a]:c2[a] + 1] = 0
+            left = np.count_nonzero(boards, axis=(1, 2))
+            best = int(left.argmin())
+            if left[best] <= best_score:
+                best_score = int(left[best])
+                incumbent = incumbent[:cut] + paths[best]
+            self.search_scores.append(int(best_score))
+        return incumbent
 
 
 def create_strategy(strategy_name: str, **kwargs) -> Strategy:
@@ -311,6 +410,7 @@ def create_strategy(strategy_name: str, **kwargs) -> Strategy:
         "epsilon_greedy": EpsilonGreedyStrategy,
         "max_future_moves": MaxFutureMovesStrategy,
         "multi_start": MultiStartStrategy,
+        "trajectory_search": TrajectorySearchStrategy,
     }
     strategy_class = strategies.get(strategy_name.lower())
     if strategy_class is None:

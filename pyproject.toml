@@ -26,6 +26,7 @@ dependencies = [
 
 [project.optional-dependencies]
 app = ["streamlit>=1.28.0"]
+search = ["numba>=0.61"]
 
 [project.scripts]
 rs10env-app = "rs10env.app:main"

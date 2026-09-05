@@ -56,7 +56,50 @@ uv run streamlit run app.py
 
 ### 最新策略
 
-**最新策略：`trajectory_search`。实现者：gpt6 astra。**
+**最新策略：`population_search`。实现者：gpt6 astra。**
+
+目标按默认 16×10 棋盘的平均清除格数衡量。两组独立棋盘共 60 局，平均 **129.98 格**、整局平均 **8.20 秒**、最大 **8.63 秒**，**0/60 局超过 10 秒**。这是本机预热后的实测，不是所有硬件上的硬实时保证，也不保证每局都达到 130 格。
+
+```bash
+pip install -e '.[search]'
+```
+
+```python
+import torch
+from rs10env import RS10Env, create_strategy, run_episode
+from rs10env.fast_search import PopulationSearchStrategy
+
+torch.set_num_threads(1)
+PopulationSearchStrategy.warmup()  # 首次编译单独执行，不计入单局耗时
+env = RS10Env(device="cpu")
+strategy = create_strategy("population_search", time_budget=8.0, seed=68, device="cpu")
+print(run_episode(env, strategy, seed=3000))
+```
+
+主要变化：使用 Numba 编译搜索；按列区间累积行和，只枚举合法矩形并为合法动作采样；维护 12 条候选路线，允许候选暂时退步以跳出局部最优，同时单独保存历史最佳完整方案。8 秒内约完成 5万至10万次路线搜索。开发与参数试验使用种子 42–46、2000–2004，以下两组种子均未参与调参。
+
+| 独立棋盘种子 | max_future_moves | trajectory_search | population_search | 平均秒/局 | 最大秒/局 |
+|--------------|-----------------:|------------------:|------------------:|----------:|----------:|
+| 3000–3029 | 117.77 | 125.00 | **131.10** | 8.216 | 8.627 |
+| 4000–4029 | 116.27 | 123.37 | **128.87** | 8.190 | 8.264 |
+| 合计 60 局 | 117.02 | 124.18 | **129.98** | 8.203 | 8.627 |
+
+默认规则，CPU 单线程，每局策略种子重置为 68。对 `max_future_moves` 为 60 胜，平均多清 12.97 格；对 `trajectory_search` 为 52 胜 / 2 平 / 6 负，平均多清 5.80 格。这里比较的是各自预算下的效果，不代表严格相同耗时下的优势。
+
+时间预算 `time_budget` 只覆盖规划，每 16 次搜索检查一次，是软截止；还需加上最后一个批次、环境重置与方案执行时间。开发时首次编译约 4.11 秒，评测时已有缓存，预热约 0.25 秒，均不计入单局结果。冷启动可能超过 10 秒，其他机器和负载下也需重新测量。CPU 上完成搜索，尚未验证 CUDA 端到端延迟。
+
+按时间停止时，不同机器完成的搜索次数不同，结果可能不同；要确定性复现算法测试，可设固定 `max_rollouts` 并给足 `time_budget`，避免触发时间截止。
+
+```bash
+python -m rs10env.benchmark --population --games 30 --seed 3000
+python -m rs10env.benchmark --population --games 30 --seed 4000
+```
+
+逐局原始结果：[3000–3029](docs/benchmark/population_search_3000_3029.json)、[4000–4029](docs/benchmark/population_search_4000_4029.json)。安装 `search` 可选依赖后，界面策略列表会显示 `population_search`。
+
+### 上一版 trajectory_search
+
+**实现者：gpt6 astra。**
 
 与上一版独立随机试跑不同，新策略积累并优化已有解：在不同深度截断当前最佳路线，优先尝试不同的动作，用不同强度的旧动作偏好修复剩余路线。既探索早期决策，也优化残局；同分方案可替换以探索新的路线。搜索同时排除对角端点已被删除、永远不可能再合法的矩形。
 

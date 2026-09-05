@@ -1,5 +1,6 @@
 """运行多策略对比：单局/多局统计；单棋盘多策略。"""
 import time
+from importlib.util import find_spec
 from typing import List, Optional, Any, Union, Callable
 import numpy as np
 import torch
@@ -19,6 +20,8 @@ STRATEGY_NAMES = [
     "multi_start",
     "trajectory_search",
 ]
+if find_spec("numba") is not None:
+    STRATEGY_NAMES.append("population_search")
 
 
 def run_episode(

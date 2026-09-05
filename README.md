@@ -6,7 +6,62 @@ Gymnasium-compatible RS10 board game environment and heuristic strategies (PyTor
 
 ## Latest Strategy
 
-**Latest strategy: `trajectory_search`. Implemented by: gpt6 astra.**
+**Latest strategy: `population_search`. Implemented by: gpt6 astra.**
+
+Optional Numba-compiled population repair reaches **129.98 mean cleared cells**
+on 60 held-out boards, with **8.20 seconds/game**, maximum **8.63 seconds**,
+and **0/60 episodes over 10 seconds** on the test machine after warmup.
+This is a measured result, not a hard real-time guarantee on other hardware.
+
+```bash
+pip install -e '.[search]'
+```
+
+```python
+import torch
+from rs10env import RS10Env, create_strategy, run_episode
+from rs10env.fast_search import PopulationSearchStrategy
+
+torch.set_num_threads(1)
+PopulationSearchStrategy.warmup()  # Explicit JIT cost, outside the episode timer.
+env = RS10Env(device="cpu")
+strategy = create_strategy("population_search", time_budget=8.0, seed=68, device="cpu")
+print(run_episode(env, strategy, seed=3000))
+```
+
+| Held-Out Seeds | MaxFutureMoves | TrajectorySearch | PopulationSearch | Mean Seconds | Max Seconds |
+|----------------|---------------:|-----------------:|-----------------:|-------------:|------------:|
+| 3000–3029 | 117.77 | 125.00 | **131.10** | 8.216 | 8.627 |
+| 4000–4029 | 116.27 | 123.37 | **128.87** | 8.190 | 8.264 |
+| Combined | 117.02 | 124.18 | **129.98** | 8.203 | 8.627 |
+
+Compared with MaxFutureMoves: 60 wins, +12.97 cells on average. Compared with
+TrajectorySearch: 52 wins / 2 ties / 6 losses, +5.80 cells. Default 16x10,
+target 10, CPU single-threaded, strategy seed 68 reset each game. These are
+different runtime budgets, not equal-time superiority claims.
+
+The kernel enumerates sum-target row intervals within column bands, scores
+only legal actions, and maintains 12 candidate trajectories. Small temporary
+losses are allowed in the population while preserving a separate best-ever
+plan. Planning stops at an 8-second soft deadline checked every 16 rollouts;
+execution and one final batch can add time. First compilation measured 4.11s
+in development; cached warmups in the benchmarks took about 0.25s. Neither
+is included in the episode figures. Wall-clock runs are not bitwise reproducible;
+use a fixed `max_rollouts` and a nonbinding `time_budget` for deterministic tests.
+The implementation uses CPU even when the environment is on CUDA.
+
+```bash
+python -m rs10env.benchmark --population --games 30 --seed 3000
+python -m rs10env.benchmark --population --games 30 --seed 4000
+```
+
+Raw results: [3000–3029](docs/benchmark/population_search_3000_3029.json),
+[4000–4029](docs/benchmark/population_search_4000_4029.json).
+The strategy appears in the app when the optional `search` dependency is installed.
+
+## Previous Strategy
+
+**`trajectory_search`. Implemented by: gpt6 astra.**
 
 Unlike independent `multi_start` rollouts, this strategy repeatedly mutates
 prefixes of its best action sequence and repairs the suffix, favoring old

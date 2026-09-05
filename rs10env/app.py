@@ -50,6 +50,8 @@ with st.sidebar:
         default=["random", "greedy", "center_bias", "max_future_moves"],
         help="可多选",
     )
+    if "population_search" in selected:
+        st.caption("population_search 使用 CPU 编译搜索；首次编译额外耗时，10 秒实测不含预热。")
 
 mode = st.radio("模式", ["单棋盘多策略", "多局对比"], horizontal=True)
 

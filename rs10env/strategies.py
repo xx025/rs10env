@@ -400,6 +400,14 @@ class TrajectorySearchStrategy(MultiStartStrategy):
 
 def create_strategy(strategy_name: str, **kwargs) -> Strategy:
     """根据名称创建策略实例。"""
+    if strategy_name.lower() == "population_search":
+        try:
+            from rs10env.fast_search import PopulationSearchStrategy
+        except ModuleNotFoundError as exc:
+            if exc.name != "numba":
+                raise
+            raise ImportError("population_search requires: pip install 'rs10env[search]'") from exc
+        return PopulationSearchStrategy(**kwargs)
     strategies = {
         "random": RandomStrategy,
         "greedy": GreedyStrategy,

@@ -133,7 +133,7 @@ def test_full_games_legal_nonmutating_reproducible_and_best_score(target, seed):
 def test_cached_plan_reused_and_invalidated(strategy, change):
     env = RS10Env(H=4, W=5, device="cpu")
     _, info = env.reset(board=np.full((4, 5), 5, dtype=np.int32))
-    with patch.object(fast_search, "search_batch", wraps=fast_search.search_batch) as search:
+    with patch.object(strategy, "_search_batch", wraps=strategy._search_batch) as search:
         action = _action_without_mutation(strategy, env, info["action_mask"])
         assert strategy._plan
         calls = search.call_count

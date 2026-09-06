@@ -6,6 +6,20 @@ Gymnasium-compatible RS10 board game environment and heuristic strategies (PyTor
 
 ## Latest Strategy
 
+[Spatial and exact-search experiments](docs/SPATIAL_RESEARCH.md) found no meaningful
+held-out gain from distance-based neighborhood selection. Exact suffix diagnostics
+showed five fixed-prefix 8-move endgames were already optimal; this does not prove
+the complete games optimal. The 140-cell target remains unmet.
+
+Further experiment: [variable-neighborhood repair](docs/NEIGHBORHOOD_RESEARCH.md)
+averaged **133.50** on 40 new paired boards versus 129.825 for population search,
+with no episode over 10 seconds after warmup. **The 140 target remains unmet.**
+
+Experimental follow-up: [remote NRPA-style algorithm research](docs/REMOTE_RESEARCH.md)
+on the user's remote machine found 127.70 versus 125.53 for population search on
+30 new paired boards (about 8.75s/game). **The 140-cell target was not reached.**
+`adaptive_search` is available through the factory but is not a default recommendation.
+
 **Latest strategy: `population_search`. Implemented by: gpt6 astra.**
 
 Optional Numba-compiled population repair reaches **129.98 mean cleared cells**

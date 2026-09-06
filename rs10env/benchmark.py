@@ -1,7 +1,6 @@
 """Paired benchmark: python -m rs10env.benchmark --games 100 --seed 1000."""
 import argparse
 import json
-import platform
 import time
 from pathlib import Path
 
@@ -85,8 +84,6 @@ def main():
         "iterations": args.iterations, "batch_size": args.batch_size,
         "strategy_seed": 68, "torch_threads": 1,
         "warmup_seconds": warmup_seconds, "planning_budget": args.time_budget if args.population else None,
-        "environment": {"python": platform.python_version(), "numpy": np.__version__,
-                        "torch": torch.__version__, "platform": platform.platform()},
     }
     print(json.dumps(summary), flush=True)
     if args.output:

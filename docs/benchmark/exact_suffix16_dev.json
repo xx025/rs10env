@@ -1,0 +1,46 @@
+{
+  "suffix": 16,
+  "node_budget": 20000,
+  "episodes": [
+    {
+      "seed": 42,
+      "baseline": 138,
+      "exact_result": 138,
+      "proven_optimal": false,
+      "nodes": 20000,
+      "seconds": 14.932584379974287
+    },
+    {
+      "seed": 43,
+      "baseline": 145,
+      "exact_result": 145,
+      "proven_optimal": false,
+      "nodes": 20000,
+      "seconds": 13.358039073995315
+    },
+    {
+      "seed": 44,
+      "baseline": 107,
+      "exact_result": 107,
+      "proven_optimal": true,
+      "nodes": 3046,
+      "seconds": 3.417413780000061
+    },
+    {
+      "seed": 45,
+      "baseline": 117,
+      "exact_result": 117,
+      "proven_optimal": true,
+      "nodes": 2772,
+      "seconds": 2.69393864198355
+    },
+    {
+      "seed": 46,
+      "baseline": 143,
+      "exact_result": 143,
+      "proven_optimal": true,
+      "nodes": 13115,
+      "seconds": 9.208332524984144
+    }
+  ]
+}

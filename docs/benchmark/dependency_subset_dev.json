@@ -1,0 +1,172 @@
+{
+  "node_budget": 100,
+  "suffix": 20,
+  "goals_per_board": 3,
+  "records": [
+    {
+      "seed": 42,
+      "cut": 42,
+      "goal": 19,
+      "excess": 1,
+      "success": false,
+      "proven_infeasible": true,
+      "nodes": 1,
+      "seconds": 0.014531827007886022,
+      "actions": []
+    },
+    {
+      "seed": 42,
+      "cut": 42,
+      "goal": 35,
+      "excess": 1,
+      "success": false,
+      "proven_infeasible": true,
+      "nodes": 1,
+      "seconds": 0.013873748015612364,
+      "actions": []
+    },
+    {
+      "seed": 42,
+      "cut": 42,
+      "goal": 42,
+      "excess": 1,
+      "success": false,
+      "proven_infeasible": true,
+      "nodes": 1,
+      "seconds": 0.013881271006539464,
+      "actions": []
+    },
+    {
+      "seed": 43,
+      "cut": 50,
+      "goal": 3249,
+      "excess": 1,
+      "success": false,
+      "proven_infeasible": true,
+      "nodes": 1,
+      "seconds": 0.013784721959382296,
+      "actions": []
+    },
+    {
+      "seed": 43,
+      "cut": 50,
+      "goal": 5519,
+      "excess": 1,
+      "success": false,
+      "proven_infeasible": true,
+      "nodes": 1,
+      "seconds": 0.01380745496135205,
+      "actions": []
+    },
+    {
+      "seed": 43,
+      "cut": 50,
+      "goal": 6909,
+      "excess": 1,
+      "success": false,
+      "proven_infeasible": true,
+      "nodes": 1,
+      "seconds": 0.05054628598736599,
+      "actions": []
+    },
+    {
+      "seed": 44,
+      "cut": 27,
+      "goal": 152,
+      "excess": 1,
+      "success": false,
+      "proven_infeasible": true,
+      "nodes": 1,
+      "seconds": 0.013864040025509894,
+      "actions": []
+    },
+    {
+      "seed": 44,
+      "cut": 27,
+      "goal": 3174,
+      "excess": 1,
+      "success": false,
+      "proven_infeasible": true,
+      "nodes": 1,
+      "seconds": 0.01374907698482275,
+      "actions": []
+    },
+    {
+      "seed": 44,
+      "cut": 27,
+      "goal": 3214,
+      "excess": 1,
+      "success": false,
+      "proven_infeasible": true,
+      "nodes": 1,
+      "seconds": 0.01384836999932304,
+      "actions": []
+    },
+    {
+      "seed": 45,
+      "cut": 34,
+      "goal": 101,
+      "excess": 1,
+      "success": false,
+      "proven_infeasible": true,
+      "nodes": 1,
+      "seconds": 0.013927888008765876,
+      "actions": []
+    },
+    {
+      "seed": 45,
+      "cut": 34,
+      "goal": 2475,
+      "excess": 1,
+      "success": false,
+      "proven_infeasible": true,
+      "nodes": 1,
+      "seconds": 0.013737654953729361,
+      "actions": []
+    },
+    {
+      "seed": 45,
+      "cut": 34,
+      "goal": 3153,
+      "excess": 1,
+      "success": false,
+      "proven_infeasible": true,
+      "nodes": 1,
+      "seconds": 0.013845795998349786,
+      "actions": []
+    },
+    {
+      "seed": 46,
+      "cut": 45,
+      "goal": 1694,
+      "excess": 1,
+      "success": false,
+      "proven_infeasible": true,
+      "nodes": 1,
+      "seconds": 0.014031930011697114,
+      "actions": []
+    },
+    {
+      "seed": 46,
+      "cut": 45,
+      "goal": 1757,
+      "excess": 1,
+      "success": false,
+      "proven_infeasible": true,
+      "nodes": 1,
+      "seconds": 0.013817062950693071,
+      "actions": []
+    },
+    {
+      "seed": 46,
+      "cut": 45,
+      "goal": 1770,
+      "excess": 1,
+      "success": false,
+      "proven_infeasible": true,
+      "nodes": 1,
+      "seconds": 0.017184083990287036,
+      "actions": []
+    }
+  ]
+}

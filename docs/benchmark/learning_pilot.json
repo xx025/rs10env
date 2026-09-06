@@ -1,0 +1,661 @@
+{
+  "config": {
+    "teacher_games": 32,
+    "teacher_budget": 0.2,
+    "epochs": 3,
+    "rl_games": 32,
+    "eval_games": 10,
+    "seed": 100000,
+    "H": 16,
+    "W": 10,
+    "learning_rate": 0.001,
+    "entropy": 0.01,
+    "value_weight": 0.5,
+    "return_normalization": "cleared_cells / board_area",
+    "rl_seed_offset": 500000,
+    "eval_seed_offset": 1000000,
+    "teacher_timing_note": "Wall-clock search may vary despite fixed seeds"
+  },
+  "teacher": [
+    {
+      "seed": 100000,
+      "steps": 62,
+      "cleared": 135,
+      "remaining": 25,
+      "cleared_fraction": 0.84375
+    },
+    {
+      "seed": 100001,
+      "steps": 50,
+      "cleared": 112,
+      "remaining": 48,
+      "cleared_fraction": 0.7
+    },
+    {
+      "seed": 100002,
+      "steps": 38,
+      "cleared": 83,
+      "remaining": 77,
+      "cleared_fraction": 0.51875
+    },
+    {
+      "seed": 100003,
+      "steps": 60,
+      "cleared": 133,
+      "remaining": 27,
+      "cleared_fraction": 0.83125
+    },
+    {
+      "seed": 100004,
+      "steps": 55,
+      "cleared": 119,
+      "remaining": 41,
+      "cleared_fraction": 0.74375
+    },
+    {
+      "seed": 100005,
+      "steps": 59,
+      "cleared": 136,
+      "remaining": 24,
+      "cleared_fraction": 0.85
+    },
+    {
+      "seed": 100006,
+      "steps": 59,
+      "cleared": 137,
+      "remaining": 23,
+      "cleared_fraction": 0.85625
+    },
+    {
+      "seed": 100007,
+      "steps": 60,
+      "cleared": 132,
+      "remaining": 28,
+      "cleared_fraction": 0.825
+    },
+    {
+      "seed": 100008,
+      "steps": 54,
+      "cleared": 114,
+      "remaining": 46,
+      "cleared_fraction": 0.7125
+    },
+    {
+      "seed": 100009,
+      "steps": 47,
+      "cleared": 108,
+      "remaining": 52,
+      "cleared_fraction": 0.675
+    },
+    {
+      "seed": 100010,
+      "steps": 55,
+      "cleared": 124,
+      "remaining": 36,
+      "cleared_fraction": 0.775
+    },
+    {
+      "seed": 100011,
+      "steps": 54,
+      "cleared": 124,
+      "remaining": 36,
+      "cleared_fraction": 0.775
+    },
+    {
+      "seed": 100012,
+      "steps": 48,
+      "cleared": 106,
+      "remaining": 54,
+      "cleared_fraction": 0.6625
+    },
+    {
+      "seed": 100013,
+      "steps": 61,
+      "cleared": 142,
+      "remaining": 18,
+      "cleared_fraction": 0.8875
+    },
+    {
+      "seed": 100014,
+      "steps": 56,
+      "cleared": 131,
+      "remaining": 29,
+      "cleared_fraction": 0.81875
+    },
+    {
+      "seed": 100015,
+      "steps": 61,
+      "cleared": 136,
+      "remaining": 24,
+      "cleared_fraction": 0.85
+    },
+    {
+      "seed": 100016,
+      "steps": 64,
+      "cleared": 143,
+      "remaining": 17,
+      "cleared_fraction": 0.89375
+    },
+    {
+      "seed": 100017,
+      "steps": 55,
+      "cleared": 126,
+      "remaining": 34,
+      "cleared_fraction": 0.7875
+    },
+    {
+      "seed": 100018,
+      "steps": 54,
+      "cleared": 122,
+      "remaining": 38,
+      "cleared_fraction": 0.7625
+    },
+    {
+      "seed": 100019,
+      "steps": 58,
+      "cleared": 128,
+      "remaining": 32,
+      "cleared_fraction": 0.8
+    },
+    {
+      "seed": 100020,
+      "steps": 46,
+      "cleared": 101,
+      "remaining": 59,
+      "cleared_fraction": 0.63125
+    },
+    {
+      "seed": 100021,
+      "steps": 60,
+      "cleared": 137,
+      "remaining": 23,
+      "cleared_fraction": 0.85625
+    },
+    {
+      "seed": 100022,
+      "steps": 56,
+      "cleared": 124,
+      "remaining": 36,
+      "cleared_fraction": 0.775
+    },
+    {
+      "seed": 100023,
+      "steps": 61,
+      "cleared": 134,
+      "remaining": 26,
+      "cleared_fraction": 0.8375
+    },
+    {
+      "seed": 100024,
+      "steps": 64,
+      "cleared": 146,
+      "remaining": 14,
+      "cleared_fraction": 0.9125
+    },
+    {
+      "seed": 100025,
+      "steps": 59,
+      "cleared": 129,
+      "remaining": 31,
+      "cleared_fraction": 0.80625
+    },
+    {
+      "seed": 100026,
+      "steps": 69,
+      "cleared": 152,
+      "remaining": 8,
+      "cleared_fraction": 0.95
+    },
+    {
+      "seed": 100027,
+      "steps": 59,
+      "cleared": 134,
+      "remaining": 26,
+      "cleared_fraction": 0.8375
+    },
+    {
+      "seed": 100028,
+      "steps": 68,
+      "cleared": 150,
+      "remaining": 10,
+      "cleared_fraction": 0.9375
+    },
+    {
+      "seed": 100029,
+      "steps": 55,
+      "cleared": 124,
+      "remaining": 36,
+      "cleared_fraction": 0.775
+    },
+    {
+      "seed": 100030,
+      "steps": 49,
+      "cleared": 110,
+      "remaining": 50,
+      "cleared_fraction": 0.6875
+    },
+    {
+      "seed": 100031,
+      "steps": 56,
+      "cleared": 124,
+      "remaining": 36,
+      "cleared_fraction": 0.775
+    }
+  ],
+  "supervised_losses": [
+    2.8143054760239634,
+    2.718158389383382,
+    2.6342840164316326
+  ],
+  "rl_losses": [
+    -0.38408747664652765,
+    -0.19526228843824356,
+    0.041081422763225905,
+    0.04929323177202605,
+    0.00722675581346266,
+    0.15597038437408628,
+    0.10332166254772801,
+    0.26566194526367326,
+    0.10556969525259774,
+    -0.11241995682212291,
+    0.036334843969598296,
+    0.1108759919318345,
+    -0.4499113390920684,
+    0.10724380575436498,
+    -0.15559267270873534,
+    -0.24834387686132686,
+    -0.34113492676988244,
+    0.15376803673370887,
+    0.31486253598268377,
+    0.1938010720659804,
+    0.07590915326545655,
+    -0.25456574261625065,
+    -0.06255867688378203,
+    0.045601294836615125,
+    0.05935888883914231,
+    -0.0031258251901817857,
+    0.31057969439643784,
+    0.23954556790287765,
+    0.11519453078471997,
+    -0.10727071341898409,
+    0.027460599617370463,
+    -0.13747334190702531
+  ],
+  "rl_games": [
+    {
+      "seed": 600000,
+      "steps": 45,
+      "cleared": 100,
+      "remaining": 60,
+      "cleared_fraction": 0.625
+    },
+    {
+      "seed": 600001,
+      "steps": 44,
+      "cleared": 106,
+      "remaining": 54,
+      "cleared_fraction": 0.6625
+    },
+    {
+      "seed": 600002,
+      "steps": 41,
+      "cleared": 103,
+      "remaining": 57,
+      "cleared_fraction": 0.64375
+    },
+    {
+      "seed": 600003,
+      "steps": 39,
+      "cleared": 93,
+      "remaining": 67,
+      "cleared_fraction": 0.58125
+    },
+    {
+      "seed": 600004,
+      "steps": 36,
+      "cleared": 83,
+      "remaining": 77,
+      "cleared_fraction": 0.51875
+    },
+    {
+      "seed": 600005,
+      "steps": 44,
+      "cleared": 110,
+      "remaining": 50,
+      "cleared_fraction": 0.6875
+    },
+    {
+      "seed": 600006,
+      "steps": 44,
+      "cleared": 106,
+      "remaining": 54,
+      "cleared_fraction": 0.6625
+    },
+    {
+      "seed": 600007,
+      "steps": 45,
+      "cleared": 113,
+      "remaining": 47,
+      "cleared_fraction": 0.70625
+    },
+    {
+      "seed": 600008,
+      "steps": 35,
+      "cleared": 82,
+      "remaining": 78,
+      "cleared_fraction": 0.5125
+    },
+    {
+      "seed": 600009,
+      "steps": 39,
+      "cleared": 93,
+      "remaining": 67,
+      "cleared_fraction": 0.58125
+    },
+    {
+      "seed": 600010,
+      "steps": 41,
+      "cleared": 94,
+      "remaining": 66,
+      "cleared_fraction": 0.5875
+    },
+    {
+      "seed": 600011,
+      "steps": 52,
+      "cleared": 120,
+      "remaining": 40,
+      "cleared_fraction": 0.75
+    },
+    {
+      "seed": 600012,
+      "steps": 38,
+      "cleared": 92,
+      "remaining": 68,
+      "cleared_fraction": 0.575
+    },
+    {
+      "seed": 600013,
+      "steps": 49,
+      "cleared": 106,
+      "remaining": 54,
+      "cleared_fraction": 0.6625
+    },
+    {
+      "seed": 600014,
+      "steps": 36,
+      "cleared": 83,
+      "remaining": 77,
+      "cleared_fraction": 0.51875
+    },
+    {
+      "seed": 600015,
+      "steps": 44,
+      "cleared": 99,
+      "remaining": 61,
+      "cleared_fraction": 0.61875
+    },
+    {
+      "seed": 600016,
+      "steps": 29,
+      "cleared": 71,
+      "remaining": 89,
+      "cleared_fraction": 0.44375
+    },
+    {
+      "seed": 600017,
+      "steps": 42,
+      "cleared": 93,
+      "remaining": 67,
+      "cleared_fraction": 0.58125
+    },
+    {
+      "seed": 600018,
+      "steps": 48,
+      "cleared": 108,
+      "remaining": 52,
+      "cleared_fraction": 0.675
+    },
+    {
+      "seed": 600019,
+      "steps": 47,
+      "cleared": 108,
+      "remaining": 52,
+      "cleared_fraction": 0.675
+    },
+    {
+      "seed": 600020,
+      "steps": 38,
+      "cleared": 91,
+      "remaining": 69,
+      "cleared_fraction": 0.56875
+    },
+    {
+      "seed": 600021,
+      "steps": 42,
+      "cleared": 99,
+      "remaining": 61,
+      "cleared_fraction": 0.61875
+    },
+    {
+      "seed": 600022,
+      "steps": 39,
+      "cleared": 96,
+      "remaining": 64,
+      "cleared_fraction": 0.6
+    },
+    {
+      "seed": 600023,
+      "steps": 41,
+      "cleared": 103,
+      "remaining": 57,
+      "cleared_fraction": 0.64375
+    },
+    {
+      "seed": 600024,
+      "steps": 40,
+      "cleared": 93,
+      "remaining": 67,
+      "cleared_fraction": 0.58125
+    },
+    {
+      "seed": 600025,
+      "steps": 34,
+      "cleared": 82,
+      "remaining": 78,
+      "cleared_fraction": 0.5125
+    },
+    {
+      "seed": 600026,
+      "steps": 50,
+      "cleared": 113,
+      "remaining": 47,
+      "cleared_fraction": 0.70625
+    },
+    {
+      "seed": 600027,
+      "steps": 47,
+      "cleared": 108,
+      "remaining": 52,
+      "cleared_fraction": 0.675
+    },
+    {
+      "seed": 600028,
+      "steps": 43,
+      "cleared": 102,
+      "remaining": 58,
+      "cleared_fraction": 0.6375
+    },
+    {
+      "seed": 600029,
+      "steps": 38,
+      "cleared": 90,
+      "remaining": 70,
+      "cleared_fraction": 0.5625
+    },
+    {
+      "seed": 600030,
+      "steps": 45,
+      "cleared": 105,
+      "remaining": 55,
+      "cleared_fraction": 0.65625
+    },
+    {
+      "seed": 600031,
+      "steps": 40,
+      "cleared": 85,
+      "remaining": 75,
+      "cleared_fraction": 0.53125
+    }
+  ],
+  "supervised": {
+    "games": [
+      {
+        "seed": 1100000,
+        "steps": 53,
+        "cleared": 116,
+        "remaining": 44,
+        "cleared_fraction": 0.725
+      },
+      {
+        "seed": 1100001,
+        "steps": 41,
+        "cleared": 92,
+        "remaining": 68,
+        "cleared_fraction": 0.575
+      },
+      {
+        "seed": 1100002,
+        "steps": 35,
+        "cleared": 76,
+        "remaining": 84,
+        "cleared_fraction": 0.475
+      },
+      {
+        "seed": 1100003,
+        "steps": 55,
+        "cleared": 128,
+        "remaining": 32,
+        "cleared_fraction": 0.8
+      },
+      {
+        "seed": 1100004,
+        "steps": 42,
+        "cleared": 96,
+        "remaining": 64,
+        "cleared_fraction": 0.6
+      },
+      {
+        "seed": 1100005,
+        "steps": 45,
+        "cleared": 99,
+        "remaining": 61,
+        "cleared_fraction": 0.61875
+      },
+      {
+        "seed": 1100006,
+        "steps": 44,
+        "cleared": 99,
+        "remaining": 61,
+        "cleared_fraction": 0.61875
+      },
+      {
+        "seed": 1100007,
+        "steps": 44,
+        "cleared": 104,
+        "remaining": 56,
+        "cleared_fraction": 0.65
+      },
+      {
+        "seed": 1100008,
+        "steps": 46,
+        "cleared": 106,
+        "remaining": 54,
+        "cleared_fraction": 0.6625
+      },
+      {
+        "seed": 1100009,
+        "steps": 41,
+        "cleared": 90,
+        "remaining": 70,
+        "cleared_fraction": 0.5625
+      }
+    ],
+    "mean_cleared_fraction": 0.6287499999999999
+  },
+  "reinforcement": {
+    "games": [
+      {
+        "seed": 1100000,
+        "steps": 50,
+        "cleared": 112,
+        "remaining": 48,
+        "cleared_fraction": 0.7
+      },
+      {
+        "seed": 1100001,
+        "steps": 39,
+        "cleared": 87,
+        "remaining": 73,
+        "cleared_fraction": 0.54375
+      },
+      {
+        "seed": 1100002,
+        "steps": 36,
+        "cleared": 81,
+        "remaining": 79,
+        "cleared_fraction": 0.50625
+      },
+      {
+        "seed": 1100003,
+        "steps": 51,
+        "cleared": 121,
+        "remaining": 39,
+        "cleared_fraction": 0.75625
+      },
+      {
+        "seed": 1100004,
+        "steps": 40,
+        "cleared": 92,
+        "remaining": 68,
+        "cleared_fraction": 0.575
+      },
+      {
+        "seed": 1100005,
+        "steps": 44,
+        "cleared": 97,
+        "remaining": 63,
+        "cleared_fraction": 0.60625
+      },
+      {
+        "seed": 1100006,
+        "steps": 50,
+        "cleared": 111,
+        "remaining": 49,
+        "cleared_fraction": 0.69375
+      },
+      {
+        "seed": 1100007,
+        "steps": 43,
+        "cleared": 104,
+        "remaining": 56,
+        "cleared_fraction": 0.65
+      },
+      {
+        "seed": 1100008,
+        "steps": 49,
+        "cleared": 113,
+        "remaining": 47,
+        "cleared_fraction": 0.70625
+      },
+      {
+        "seed": 1100009,
+        "steps": 41,
+        "cleared": 91,
+        "remaining": 69,
+        "cleared_fraction": 0.56875
+      }
+    ],
+    "mean_cleared_fraction": 0.630625
+  },
+  "paired_mean_change": 0.001875000000000071
+}

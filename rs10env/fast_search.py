@@ -108,6 +108,8 @@ class PopulationSearchStrategy(Strategy):
     max_rollouts provides deterministic experiments independently of CPU speed.
     """
 
+    _search_batch = staticmethod(search_batch)
+
     def __init__(self, time_budget=8.0, population_size=12, max_rollouts=1000000,
                  seed=None, device=None):
         super().__init__("PopulationSearch", seed, device)
@@ -163,7 +165,7 @@ class PopulationSearchStrategy(Strategy):
                 if self.rollouts and time.perf_counter() - start >= self.time_budget:
                     break
                 count = min(16, self.max_rollouts - self.rollouts)
-                best_length, best_loss = search_batch(
+                best_length, best_loss = self._search_batch(
                     board, rects, lookup, env.target_sum, horizon, root_mask,
                     population, lengths, losses, best_path, best_length, best_loss,
                     self._rng, count)

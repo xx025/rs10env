@@ -400,6 +400,18 @@ class TrajectorySearchStrategy(MultiStartStrategy):
 
 def create_strategy(strategy_name: str, **kwargs) -> Strategy:
     """根据名称创建策略实例。"""
+    if strategy_name.lower() in ("repair_search", "hybrid_search"):
+        from rs10env.repair_search import RepairSearchStrategy, HybridRepairStrategy
+        cls = HybridRepairStrategy if strategy_name.lower() == "hybrid_search" else RepairSearchStrategy
+        return cls(**kwargs)
+    if strategy_name.lower() == "adaptive_search":
+        try:
+            from rs10env.adaptive_search import AdaptiveSearchStrategy
+        except ModuleNotFoundError as exc:
+            if exc.name != "numba":
+                raise
+            raise ImportError("adaptive_search requires: pip install 'rs10env[search]'") from exc
+        return AdaptiveSearchStrategy(**kwargs)
     if strategy_name.lower() == "population_search":
         try:
             from rs10env.fast_search import PopulationSearchStrategy
